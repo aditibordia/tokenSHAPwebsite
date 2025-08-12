@@ -1,13 +1,13 @@
 # token_shap.py
 
-from typing import List, Dict, Optional, Tuple, Any, Set
+from typing import List, Dict, Optional, Tuple, Any, Set, Optional, Callable
 import pandas as pd
 import numpy as np
 import re
 import matplotlib.pyplot as plt
 from matplotlib import colors
 from tqdm.auto import tqdm
-from base import BaseSHAP, TextVectorizer, ModelBase
+from .base import BaseSHAP, TextVectorizer, ModelBase
 
 def get_text_before_last_underscore(token: str) -> str:
     """Helper function to get text before last underscore"""
@@ -173,7 +173,7 @@ class TokenSHAP(BaseSHAP):
         cbar.set_label('Shapley Value', fontsize=12)
 
         plt.tight_layout()
-        plt.show()
+        return fig
 
     def highlight_text_background(self):
         """Print text with background colors based on importance"""
@@ -201,7 +201,8 @@ class TokenSHAP(BaseSHAP):
     def analyze(self, prompt: str, 
                 sampling_ratio: float = 0.0,
                 max_combinations: Optional[int] = 1000,
-                print_highlight_text: bool = False) -> pd.DataFrame:
+                print_highlight_text: bool = False,
+                progress_cb: Optional[Callable[[int, int], None]] = None) -> pd.DataFrame:
         """
         Analyze token importance in a prompt
         
@@ -223,7 +224,8 @@ class TokenSHAP(BaseSHAP):
         responses = self._get_result_per_combination(
             prompt, 
             sampling_ratio=sampling_ratio,
-            max_combinations=max_combinations  # Pass max_combinations to base class
+            max_combinations=max_combinations,  # Pass max_combinations to base class
+            progress_cb = progress_cb
         )
         
         # Create results DataFrame

@@ -515,7 +515,8 @@ class BaseSHAP(ABC):
     def _get_result_per_combination(self, 
                                 content: Any, 
                                 sampling_ratio: float,
-                                max_combinations: Optional[int] = 1000) -> Dict[str, Tuple[str, Tuple[int, ...]]]:
+                                max_combinations: Optional[int] = 1000,
+                                progress_cb=None)-> Dict[str, Tuple[str, Tuple[int, ...]]]:
         """
         Get model responses for combinations
         
@@ -593,6 +594,11 @@ class BaseSHAP(ABC):
 
             key = self._get_combination_key(combination, indexes)
             responses[key] = (response, indexes)
+            print(combination)
+
+            if progress_cb:
+                combo_str = ", ".join(map(str, combination))
+                progress_cb(idx + 1, len(all_combinations), combo_str)
 
         return responses
 
