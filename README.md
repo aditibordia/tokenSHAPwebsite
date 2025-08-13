@@ -1,4 +1,4 @@
-# TokenSHAP & PixelSHAP: Interpreting Large Language and Vision-Language Models
+# TokenSHAP : Interpreting Large Language Models
 
 TokenSHAP and PixelSHAP are two complementary model-agnostic interpretability frameworks for large-scale AI systems. Both methods are grounded in Monte Carlo Shapley value estimation, enabling detailed attribution of importance to individual parts of the input—whether they are **tokens in text** or **objects in images**.
 
