@@ -139,10 +139,14 @@ def init_model(model_name: str):
 
     if model_name.startswith("OpenAI"):
         m = model_name.split(" - ")[1].lower()
-        return (
-            OpenAIModel(model_name=m, api_key=api_k_openai),
-            OpenAIEmbeddings(model=embedding_choice, api_key=api_k_openai)
-        )
+        if embedding_choice.startswith("text-embedding"):
+            return (
+                OpenAIModel(model_name=m, api_key=api_k_openai),
+                OpenAIEmbeddings(model=embedding_choice, api_key=api_k_openai)
+            )
+        else:
+            st.error("Incompatible model type with selected embedding. Please select a compatible pair of model and embedding type.")
+            st.stop()
 
     elif model_name.startswith("Ollama"):
         m = model_name.split(" - ")[1]
@@ -185,7 +189,45 @@ def compare_attributions(values: dict):
     # signed difference
     delta = {k_: float(a_i - b_i) for k_, a_i, b_i in zip(keys, a, b)}
     return {"overlap@k": overlap, "spearman": float(rho), "delta": delta}
+def phi_similarity_percent(
+    df: pd.DataFrame,
+    token_id_col: str = "token",   # better: a stable id like "start_char"
+    value_col: str = "phi",        # or "delta" if you use Δφ vs reference
+    group_col: str | None = None,  # e.g., "prompt_id" to average across prompts
+    min_overlap: int = 3,          # min shared tokens to compute similarity
+) -> pd.DataFrame:
+    """
+    Returns a model x model matrix of token-importance similarity in percent.
+    Expects df with columns: [model, token_id_col, value_col, (optional) group_col]
+    """
+    def corr_matrix(sub: pd.DataFrame):
+    # if tokens are the index:
+        pt = sub.reindex(columns=models)          # ensure consistent column order
+        pt = pt.apply(pd.to_numeric, errors="coerce")  # coerce any stray strings
+        pt = pt.dropna(how="all")                      # drop tokens missing for all models
+        corr = pt.corr(method="pearson", min_periods=min_overlap)
 
+        n = pt.notna().T @ pt.notna()                  # pairwise token overlaps
+        return corr, n
+
+    if group_col is None:
+        corr, _ = corr_matrix(df)
+        sim = ((corr.clip(-1, 1) + 1) / 2) * 100.0
+        return sim.round(1)
+
+    # Aggregate across groups (prompts) via Fisher z, weighted by overlaps
+    models = sorted(df.columns.unique())
+    z_sum = pd.DataFrame(0.0, index=models, columns=models)
+    w_sum = pd.DataFrame(0.0, index=models, columns=models)
+
+    corr, n = corr_matrix(df)   # df has many tokens x models
+    # sim = ((corr.clip(-1,1) + 1) / 2) * 100
+    # st.write(sim)
+
+    # z_avg = z_sum / np.maximum(w_sum, 1)   # avoid div by zero
+    # r = np.tanh(z_avg)                     # back to correlation
+    sim = corr.abs() * 100
+    return pd.DataFrame(sim, index=models, columns=models).round(1)
 
 # =========================
 # Run analysis
@@ -266,9 +308,10 @@ if run:
                 .mark_bar()
                 .encode(
                     x=alt.X("token:N", sort=None, title="Token"),
+                    xOffset=alt.XOffset("model:N"),                 # ← group by model within each token
                     y=alt.Y("delta:Q", title="Δφ vs reference"),
-                    color="model:N",
-                    column=alt.Column("model:N", title=None)  # small multiples (one column per model)
+                    color=alt.Color("model:N", title="Model"),
+                    tooltip=["model:N", "token:N", alt.Tooltip("delta:Q", format=".3f")]
                 )
                 .properties(height=220)
             )
@@ -277,4 +320,26 @@ if run:
                 # (nice extra) table of numbers
             with st.expander("See numeric Δφ values"):
                 st.dataframe(delta_top)
+            # df_phi columns: prompt_id, model, token (or start_char), phi
+            sim_matrix = phi_similarity_percent(df_phi, token_id_col="start_char", value_col="phi", group_col="prompt_id")
+            sim_df = sim_matrix.reset_index().melt(id_vars="index", var_name="model_b", value_name="similarity")
+            sim_df = sim_df.rename(columns={"index":"model_a"})
+            heat = (alt.Chart(sim_df)
+            .mark_rect()
+            .encode(
+                x=alt.X("model_a:O", title=None),
+                y=alt.Y("model_b:O", title=None),
+                color=alt.Color("similarity:Q", scale=alt.Scale(domain=[0,100]), title="Similarity %"),
+                tooltip=["model_a","model_b", alt.Tooltip("similarity:Q", format=".1f")]
+            )
+            .properties(height=280)
+            )
+            st.altair_chart(heat, use_container_width=True)
+            d = set()
+            for a, b, c in zip(sim_df['model_a'], sim_df['model_b'], sim_df['similarity']):
+                if a != b and (b, a) not in d:
+                    d.add((a, b))
+                    st.write(f"{a} and {b} are **{c}%** similar")
             st.markdown("---")
+
+st.write("Learn more about TokenSHAP here: [TokenSHAP: Interpreting Large Language Models with Monte Carlo Shapley Value Estimation](https://arxiv.org/html/2407.10114v1)")

@@ -78,7 +78,7 @@ class TokenSHAP(BaseSHAP):
     def _get_combination_key(self, combination: List[str], indexes: Tuple[int, ...]) -> str:
         """Get unique key for combination"""
         text = self.splitter.join(combination)
-        return text + '_' + ','.join(str(index) for index in indexes)
+        return text + '_' + '|'.join(str(index) for index in indexes)
 
     def print_colored_text(self):
         """Print text with tokens colored by importance"""

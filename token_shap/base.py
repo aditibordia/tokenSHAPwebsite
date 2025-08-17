@@ -86,6 +86,7 @@ def interact_with_ollama(
     response = requests.post(api_endpoint, json=data, stream=stream)
     if response.status_code != 200:
         output_handler(f"Failed to retrieve data: {response.status_code}")
+        raise requests.HTTPError(f"{response.status_code} {response.reason}\n{response.text}")
         return ""
 
     # Handle streaming or non-streaming responses
@@ -597,7 +598,7 @@ class BaseSHAP(ABC):
             print(combination)
 
             if progress_cb:
-                combo_str = ", ".join(map(str, combination))
+                combo_str = "| ".join(map(str, combination))
                 progress_cb(idx + 1, len(all_combinations), combo_str)
 
         return responses

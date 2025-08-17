@@ -1,10 +1,10 @@
-# TokenSHAP & PixelSHAP: Interpreting Large Language and Vision-Language Models
+# TokenSHAP: Interpreting Large Language Models
 
 TokenSHAP is a model-agnostic interpretability frameworks for large-scale AI systems. It's grounded in Monte Carlo Shapley value estimation, enabling detailed attribution of importance to individual parts of the input—**tokens in text**. This website was created to see that firsthand, to be able to input a prompt and compare how different models analyze that prompt. 
 
 ## Overview
 
-- **TokenSHAP** explains the output of large language models (LLMs) by computing Shapley values for input tokens. It estimates how much each token contributes to the final model response.
+- **TokenSHAP** explains the output of large language models (LLMs) by computing Shapley values for input tokens. It estimates how much each token contributes to the final model response. This website visualizes those values for any prompt a user enters. You can also select multiple models and compare their Shapley values and overall similarity, side by side.
 
 
 ---
@@ -19,7 +19,7 @@ TokenSHAP provides fine-grained interpretability for language models using Monte
 - Estimates token importance using cooperative game theory
 - Highlights which parts of a prompt contributed most to the generated response
 - Compatible with both local and API-based LLMs
-- Can compare OpenAI, HF, & Llama Models
+- Can compare OpenAI, HF, & Llama Models (HF not reccomended to run locally due to high compute)
 
 ![TokenSHAP Architecture](data/TokenSHAP_flow.png)
 
