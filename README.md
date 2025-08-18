@@ -1,10 +1,10 @@
 # TokenSHAP: Interpreting Large Language Models
 
-TokenSHAP is a model-agnostic interpretability frameworks for large-scale AI systems. It's grounded in Monte Carlo Shapley value estimation, enabling detailed attribution of importance to individual parts of the input—**tokens in text**. This website was created to see that firsthand, to be able to input a prompt and compare how different models analyze that prompt. 
+TokenSHAP is a model-agnostic interpretability frameworks for large-scale AI systems. It's grounded in Monte Carlo Shapley value estimation, enabling detailed attribution of importance to individual parts of the input—**tokens in text**. **This website** was created to see that firsthand, to be able to input a prompt and compare how different models analyze that prompt. 
 
 ## Overview
 
-- **TokenSHAP** explains the output of large language models (LLMs) by computing Shapley values for input tokens. It estimates how much each token contributes to the final model response. This website visualizes those values for any prompt a user enters. You can also select multiple models and compare their Shapley values and overall similarity, side by side.
+- **TokenSHAP** explains the output of large language models (LLMs) by computing Shapley values for input tokens. It estimates how much each token contributes to the final model response. This website visualizes those values for any prompt. You can also select multiple models and compare their Shapley values and overall similarity, side by side.
 
 
 ---
@@ -23,7 +23,7 @@ TokenSHAP provides fine-grained interpretability for language models using Monte
 
 ![TokenSHAP Architecture](data/TokenSHAP_flow.png)
 
-### Example Usage
+### Example Usage of TokenSHAP
 ```python
 from token_shap import *
 
@@ -57,6 +57,12 @@ pip install -r requirements.txt
 
 *Note: PyPI installation is currently disabled.*
 
+## 🚨 Caution
+Here are some things to know before proceeding:
+- Long prompts take a WHILE to run. The longer a prompt is, the more tokens there are, therefore, the more combinations there are to run.
+- HF models also take a while to run due to hardware limitations. It's reccomended to try any of the OpenAI or Llama models instead!
+
+As a final note, have fun trying this out! Experiment with all kinds of prompts and see what results you get!
 ---
 
 ## 📄 Citation
