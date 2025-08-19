@@ -44,6 +44,19 @@ df = token_shap_api.analyze("Why is the sky blue?", sampling_ratio=0.0)
 
 ![Tokens Importance](data/plot.JPG)
 
+### How to Use the Website
+1. Choose LLMs, embeddings models, and enter a prompt.
+   
+   ![prompt](data/prompt.png)
+2. Visualize results for each LLM, seeing which tokens are most important.
+   
+   ![visualize](data/visualize.png)
+3. Compare how models prioritize tokens to a default reference model.
+   
+   ![compare](data/compare.png)
+4. See how similar the models are overall.
+
+   ![similarity](data/similarity.png)
 
 ## 🧪 Installation
 
@@ -53,6 +66,7 @@ To get started, clone the repository and install the dependencies:
 git clone https://github.com/aditibordia/tokenSHAPwebsite.git
 cd TokenSHAP
 pip install -r requirements.txt
+streamlit run app.py
 ```
 
 *Note: PyPI installation is currently disabled.*
@@ -62,7 +76,7 @@ Here are some things to know before proceeding:
 - Long prompts take a WHILE to run. The longer a prompt is, the more tokens there are, therefore, the more combinations there are to run.
 - HF models also take a while to run due to hardware limitations. It's reccomended to try any of the OpenAI or Llama models instead!
 
-As a final note, have fun trying this out! Experiment with all kinds of prompts and see what results you get!
+Have fun trying this out! Experiment with all kinds of prompts and see what results you get!
 ---
 
 ## 📄 Citation
