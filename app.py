@@ -1,83 +1,4 @@
-# import os
-# os.environ["DYNAMIC_SAM2_PATH"] = "/Users/aditi/Documents/GitHub/TokenSHAP/dynamic_sam2"
-# from dotenv import load_dotenv
-# load_dotenv()
-
-# import sys
-# import pandas as pd
-
-# # Adds the root project directory to sys.path
-# sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
-
-# from token_shap.base import OpenAIEmbeddings, OpenAIModel, LocalModel, HuggingFaceEmbeddings, OllamaModel, TfidfTextVectorizer
-# from token_shap.token_shap import StringSplitter, TokenSHAP
-# api_k = os.getenv("OPENAI_API_KEY")
-
-# import streamlit as st
-# st.title("GPT-4o Token Probability Viewer")
-
-# # Prompt input
-# user_prompt = st.text_area("Enter your prompt:", height=150)
-# run = st.button("Analyze")
-
-# # 2) Placeholder lives immediately below the button
-# progress_slot = st.empty()
-# combo_slot = st.empty() #single placeholder
-# model = OpenAIModel(
-#     model_name='gpt-4o',
-#     api_key=api_k
-# )
-# openai_embedding = OpenAIEmbeddings(
-#     model="text-embedding-3-small", 
-#     api_key=api_k
-# )
-# splitter = StringSplitter()
-# token_shap_openai = TokenSHAP(model=model, splitter=splitter, vectorizer=openai_embedding)
-# # Run button
-# if run:
-#     if user_prompt.strip() == "":
-#         st.warning("Please enter a prompt first.")
-#     elif len(user_prompt.strip()) < 10:
-#         raise ValueError("Prompt too short for TokenSHAP analysis. Please enter at least 2 tokens.")
-
-#     else:
-#         # 3) Create the bar + status inside the placeholder
-#         with progress_slot.container():
-#             bar = st.progress(0)
-#             status = st.empty()
-#         combo_box = combo_slot.empty()
-#         chart_slot = st.empty()
-#         chart = chart_slot.line_chart(pd.DataFrame())
-#         # 4) Callback that updates those same widgets
-#         def progress_cb(done: int, total: int, combination: str):
-#             bar.progress(done / total)
-#             status.text(f"Processing {done}/{total} combinations...")
-#             if combination is not None:
-#                 combo_box.code(combination)
-
-#         # 5) Run your analysis and pass the callback
-#         try:
-#             df_openai = token_shap_openai.analyze(
-#                 user_prompt,
-#                 sampling_ratio=1.0,
-#                 print_highlight_text=True,
-#                 progress_cb=progress_cb,
-#             )
-#         finally:
-#             bar.progress(1.0)
-#             status.text("Done!")
-#             combo_box.empty()
-
-#         # (optional) remove the bar after finishing:
-#         # progress_slot.empty()
-
-#         # 6) Show results
-#         st.write("Your prompt was:\n\n", user_prompt)
-#         st.dataframe(df_openai)
-#         st.pyplot(token_shap_openai.plot_colored_text())
-
 import os
-from dotenv import load_dotenv
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -88,8 +9,7 @@ from token_shap.base import (
 )
 from token_shap.token_shap import StringSplitter, TokenSHAP
 os.environ["DYNAMIC_SAM2_PATH"] = "/Users/aditi/Documents/GitHub/TokenSHAP/dynamic_sam2"
-# Load environment variables
-load_dotenv()
+
 
 st.set_page_config(page_title="Multi-Model TokenSHAP Viewer", layout="wide")
 st.title("Multi-Model Token Probability & Attribution Viewer")
